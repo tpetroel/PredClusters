@@ -2,7 +2,7 @@ Package: PredClusters
 Type: Package
 Title: Identification of Carnivore Predation Clusters from GPS Locations
 Version: 0.1.0
-Author: Tyler Petroelje, Nick Fowler, Ashley Lutto, Nate Svoboda, Albon Guillemot
+Author: Tyler Petroelje, Nick Fowler, Ashley Lutto, Nate Svoboda, Alban Guillaumet
 Maintainer: Tyler Petroelje <tyler.petroelje@gmail.com>
 Description: Functions to aide in the identification of carnivore predations sites from GPS collar data.
     The focus is on functions to format, find, and filter GPS clusters that may be predation sites.
