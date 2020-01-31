@@ -48,9 +48,8 @@ IRwolves = function(DownloadDate = DownloadDate, CollarID = CollarID, AnimalID =
 
     clean.data$GPS.DT<-as.POSIXct(clean.data$GPS.DT)
     clean.data$ACT.DT<-as.POSIXct(clean.data$ACT.DT)
-
-    clean.data<-clean.data[rev(order(as.Date(clean.data$Date))),]
     # This formats date to work with the "find_cluster" function
+
     data = subset(clean.data,as.Date(date) >= ClusterDate & as.Date(date) < Sys.Date())
     data$line <- as.numeric(row.names(data))
     data <- data[order(data$line), ]
@@ -71,13 +70,13 @@ IRwolves = function(DownloadDate = DownloadDate, CollarID = CollarID, AnimalID =
                                     Time=raw.data$LMT_Time,lat=raw.data$Latitude,long=raw.data$Longitude,activity=1,
                                     GPS.DT=raw.data$GPS.dt,ACT.DT=raw.data$GPS.dt))
     # Cleans up missing data only keeps specified columns
+
     clean.data$Date = as.character(clean.data$Date)
     clean.data$Date = as.Date(clean.data$Date,format="%m/%d/%Y")
     clean.data$date = as.character(clean.data$date)
     clean.data$date = as.Date(clean.data$date,format="%m/%d/%Y")
-    clean.data$Time <- format(strptime(clean.data$Time, "%I:%M:%S %p"), "%H:%M:%S")
-    #clean.data$Time <- times(clean.data$Time)
     # This formats date to work with the "find_cluster" function
+
     data = subset(clean.data,as.Date(date) >= ClusterDate & as.Date(date) < Sys.Date())
   }
   # EXPORT PRIMARY GPS FILE ------------------------------
@@ -159,7 +158,7 @@ IRwolves = function(DownloadDate = DownloadDate, CollarID = CollarID, AnimalID =
   centrs = data.frame(cluster_ID=clus.centrs$cluster, n=clus.centrs$n, activity=clus.centrs$activity,
                       avg_act=clus.centrs$avg.act, Date_i=clus.centrs$Date_i, Time_i=clus.centrs$Time_i,
                       Date_f=clus.centrs$Date_f, Time_f=clus.centrs$Time_f, Easting=clus.centrs$X,Northing=clus.centrs$Y)
-  centrs[c("Initials","Date_Completed")] = " "
+  centrs[c("Initials","Date_Completed")] = ""
   centrs[c("Animal_ID")] = AnimalID
   centrs[c("Cluster_Num")] = seq(from = as.numeric(NextCluster), to = nrow(centrs)+ as.numeric(NextCluster) -1, by = 1)
   centrs[c("Correct_Num")] = sprintf("%03d", centrs$Cluster_Num)

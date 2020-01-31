@@ -20,7 +20,7 @@ find_cluster(ind = "Cluster Locations", data = data, time_thres = 1,
 This function identifies potential predation sites ("clusters") by using GPS locations from GPS collared carnivores and user defined thresholds.
 }
 \examples{
-# Identify clusters formed by GPS locations that occur within 1 day of eachother 
+# Identify clusters of GPS locations that occur within 1 day of eachother
 # and within 100 meters of eachother.
 
 find_cluster(ind = "Cluster Locations", data = data, time_thres = 1, dist_thres = 0.1, size = 1)
