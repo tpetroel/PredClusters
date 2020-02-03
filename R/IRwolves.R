@@ -33,22 +33,33 @@ IRwolves = function(DownloadDate = DownloadDate, CollarID = CollarID, AnimalID =
     raw.data = subset(raw.data,GPS.Fix.Attempt=='Succeeded')
     raw.data$line <- 1:nrow(raw.data)
 
-    clean.data = (data.frame(line=raw.data$line,Date=raw.data$GPS.Fix.Time,date=raw.data$GPS.Fix.Time,
-                             Time=raw.data$GPS.Fix.Time,lat=raw.data$GPS.Latitude,long=raw.data$GPS.Longitude,activity=1,
-                             GPS.DT=raw.data$GPS.Fix.Time,ACT.DT=raw.data$GPS.Fix.Time))
+    time.adj = (data.frame(line=raw.data$line,UTC.Date=raw.data$GPS.Fix.Time,date=raw.data$GPS.Fix.Time,
+                           UTC.Time=raw.data$GPS.Fix.Time,Time=raw.data$GPS.Fix.Time,lat=raw.data$GPS.Latitude,long=raw.data$GPS.Longitude,activity=1,
+                           GPS.DT=raw.data$GPS.Fix.Time,ACT.DT=raw.data$GPS.Fix.Time))
 
-    clean.data$Date<-as.Date(clean.data$Date,format='%Y.%m.%d %H:%M:%S')
-    clean.data$date<-as.Date(clean.data$Date,format='%Y.%m.%d %H:%M:%S')
-    clean.data$GPS.DT<-strptime(clean.data$Time,format='%Y.%m.%d %H:%M:%S')
-    clean.data$ACT.DT<-strptime(clean.data$Time,format='%Y.%m.%d %H:%M:%S')
+    time.adj$UTC.Date<-as.Date(time.adj$UTC.Date,format='%Y.%m.%d %H:%M:%S')
+    time.adj$GPS.DT<-strptime(time.adj$Time,format='%Y.%m.%d %H:%M:%S')
+    time.adj$ACT.DT<-strptime(time.adj$Time,format='%Y.%m.%d %H:%M:%S')
 
-    clean.data$Time<-strptime(clean.data$Time,format='%Y.%m.%d %H:%M:%S')
-    clean.data$Time<-strftime(clean.data$Time,format='%H:%M:%S')
-    clean.data$Time<-times(as.character(clean.data$Time))
+    time.adj$UTC.Time<-strptime(time.adj$UTC.Time,format='%Y.%m.%d %H:%M:%S')
+    time.adj$UTC.Time<-strftime(time.adj$UTC.Time,format='%H:%M:%S')
+    time.adj$UTC.Time<-times(as.character(time.adj$UTC.Time))
 
-    clean.data$GPS.DT<-as.POSIXct(clean.data$GPS.DT)
-    clean.data$ACT.DT<-as.POSIXct(clean.data$ACT.DT)
+    time.adj$GPS.DT<-as.POSIXct(time.adj$GPS.DT,tz="Etc/UTC",usetz=TRUE)
+    time.adj$ACT.DT<-as.POSIXct(time.adj$ACT.DT,tz="Etc/UTC",usetz=TRUE)
     # This formats date to work with the "find_cluster" function
+
+    time.adj$LMT.DT<-format(time.adj$GPS.DT,tz="Etc/GMT+5",usetz=TRUE)
+    # tz="Etc/GMT+5" will not take into account Daylight Savings, always keeps time -5 hours (EST) from GMT
+    # tz="America/Detroit" accounts for daylight savings (i.e., EST/EDT)
+
+    time.adj$Time<-strftime(time.adj$LMT.DT,format='%H:%M:%S')
+    time.adj$Time<-times(as.character(time.adj$Time))
+    time.adj$date<-as.Date(time.adj$LMT.DT,format='%Y-%m-%d %H:%M:%S')
+
+    clean.data = (data.frame(line=time.adj$line,Date=time.adj$UTC.Date,date=time.adj$date,
+                             Time=time.adj$Time,lat=time.adj$lat,long=time.adj$long,activity=1,
+                             GPS.DT=time.adj$GPS.DT,ACT.DT=time.adj$ACT.DT))
 
     data = subset(clean.data,as.Date(date) >= ClusterDate & as.Date(date) < Sys.Date())
     data$line <- as.numeric(row.names(data))
